@@ -11,6 +11,6 @@ exports.createBook = (req, res, next) => {
     //Create book in db
     res.status(201).json({
         message: 'Book created!',
-        post: {name: name, author: author}
+        post: {_id: new Date().toISOString, name: name, author: author}
     })
 };
