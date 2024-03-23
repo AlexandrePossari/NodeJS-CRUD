@@ -10,8 +10,10 @@ router.get('/books', feedController.getBooks);
 
 // /POST /feed/book
 router.post('/book', [
-    body('name').trim().isLength({min: 5}),
-    body('author').trim().isLength({min: 5}),
-],feedController.createBook);
+    body('name').trim().isLength({ min: 5 }),
+    body('author').trim().isLength({ min: 5 }),
+], feedController.createBook);
+
+router.get('/book/:bookId', feedController.getBook);
 
 module.exports = router;

@@ -3,34 +3,61 @@ const { validationResult } = require('express-validator');
 const Book = require('../models/book');
 
 exports.getBooks = (req, res, next) => {
-    //Create
-    res.status(200).json({
-        books: [{name: 'Pequeno Príncipe', author: 'Fulano'}]
-    });
+    Book.find().then(books => {
+        res.status(200).json({ message: 'Books fetched', books: books })
+    })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        });
+};
+
+exports.getBook = (req, res, next) => {
+    const bookId = req.params.bookId;
+    Book.findById(bookId)
+        .then(book => {
+            if (!book) {
+                const error = new Error("Could not find book");
+                error.statusCode = 404;
+                throw error;
+            }
+            res.status(200).json({ message: 'Book fetched', book: book })
+        })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        });
 };
 
 exports.createBook = (req, res, next) => {
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
+    if (!errors.isEmpty()) {
         const error = new Error('Validation failed, data entered is incorrect');
-        error.statusCode(422);
+        error.statusCode = 422;
         throw error;
     }
 
     const name = req.body.name;
     const author = req.body.author;
     const book = new Book({
-        name: name, 
+        name: name,
         author: author
     });
     book.save().then(result => {
-        console.log(result);
-    }).catch(err => {
         res.status(201).json({
             message: 'Book created!',
             post: result
         })
-        console.log(err)
+        console.log(result);
+    }).catch(err => {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
     });
-    
+
 };
