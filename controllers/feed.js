@@ -59,5 +59,51 @@ exports.createBook = (req, res, next) => {
         }
         next(err);
     });
-
 };
+
+
+exports.updateBook = (req, res, next) => {
+    const bookId = req.params.bookId;
+    const name = req.body.name;
+    const author = req.body.author;
+    Book.findById(bookId).then(book => {
+        if (!book) {
+            const error = new Error('Could not find book');
+            error.statusCode = 404;
+            throw error;
+        }
+        book.name = name;
+        book.author = author;
+        return book.save();
+    }).then(result => {
+        res.status(200).json({ message: 'Book updated', book: result });
+    }).catch(err => {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    });
+};
+
+exports.deleteBook = (req, res, next) => {
+    const bookId = req.params.bookId;
+    Book.findById(bookId).then(book => {
+        if (!book) {
+            const error = new Error('Could not find book');
+            error.statusCode = 404;
+            throw error;
+        }
+        return Book.findByIdAndDelete(bookId);
+    }).then(result => {
+        console.log(result);
+        res.status(200).json({ message: 'Deleted book' })
+    }).catch(err => {
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    });
+}
+
+
+
