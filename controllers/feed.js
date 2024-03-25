@@ -120,14 +120,18 @@ exports.deleteBook = (req, res, next) => {
             error.statusCode = 404;
             throw error;
         }
-        if(book.creator.toString() !== req.UserId){
+        if(book.creator.toString() !== req.userId){
             const error = new Error('Not authorized');
             error.statusCode = 403;
             throw error;
         }
         return Book.findByIdAndDelete(bookId);
     }).then(result => {
-        console.log(result);
+        return User.findById(req.userId);
+    }).then(user => {    
+        user.books.pull(bookId);
+        return user.save();
+    }).then(result => {
         res.status(200).json({ message: 'Deleted book' })
     }).catch(err => {
         if (!err.statusCode) {
