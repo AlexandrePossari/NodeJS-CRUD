@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator');
 
 const Book = require('../models/book');
+const User = require('../models/user');
 
 exports.getBooks = (req, res, next) => {
     const currentPage = req.query.page || 1;
@@ -50,19 +51,30 @@ exports.createBook = (req, res, next) => {
         error.statusCode = 422;
         throw error;
     }
-
+    let creator;
     const name = req.body.name;
-    const author = req.body.author;
+    const author = req.body.author; 
+
     const book = new Book({
         name: name,
-        author: author
+        author: author,
+        creator: req.userId
     });
-    book.save().then(result => {
+    book.save()
+    .then(result => {
+        return User.findById(req.userId);
+    })
+    .then(user =>{  
+        creator = user;
+        user.books.push(book);
+        return user.save(); 
+    })
+    .then(result =>{     
         res.status(201).json({
             message: 'Book created!',
-            post: result
-        })
-        console.log(result);
+            book: book,
+            creator: {_id: creator._id, name: creator.name}
+        })        
     }).catch(err => {
         if (!err.statusCode) {
             err.statusCode = 500;
@@ -80,6 +92,11 @@ exports.updateBook = (req, res, next) => {
         if (!book) {
             const error = new Error('Could not find book');
             error.statusCode = 404;
+            throw error;
+        }
+        if(book.creator.toString() !== req.UserId){
+            const error = new Error('Not authorized');
+            error.statusCode = 403;
             throw error;
         }
         book.name = name;
@@ -101,6 +118,11 @@ exports.deleteBook = (req, res, next) => {
         if (!book) {
             const error = new Error('Could not find book');
             error.statusCode = 404;
+            throw error;
+        }
+        if(book.creator.toString() !== req.UserId){
+            const error = new Error('Not authorized');
+            error.statusCode = 403;
             throw error;
         }
         return Book.findByIdAndDelete(bookId);
