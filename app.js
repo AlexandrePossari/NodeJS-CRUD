@@ -3,12 +3,14 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const mongoUri = process.env.MONGO_URI;
 const appPort = process.env.APP_PORT;
+const helmet = require('helmet')
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
 
 const app = express();
 
+app.use(helmet());
 app.use(bodyParser.json());
 
 app.use((req, res, next) => {
