@@ -28,7 +28,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose.connect(
-    'mongodb://mongodb:27017/'
+    'mongodb://mongodb:27017/NodeJS-CRUD'
 ).then(result => {
     app.listen(8080)
 }).catch(err => console.log(err));
