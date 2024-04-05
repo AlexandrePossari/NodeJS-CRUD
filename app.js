@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const mongoUri = process.env.MONGO_URI;
+const appPort = process.env.APP_PORT;
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
@@ -27,8 +29,6 @@ app.use((error, req, res, next) => {
     res.status(status).json({ message: message, data: data })
 });
 
-mongoose.connect(
-    'mongodb://mongodb:27017/NodeJS-CRUD'
-).then(result => {
-    app.listen(8080)
+mongoose.connect(mongoUri, { useNewUrlParser: true }).then(result => {
+    app.listen(appPort || 8080)
 }).catch(err => console.log(err));
