@@ -3,26 +3,21 @@ const { validationResult } = require('express-validator');
 const Book = require('../models/book');
 const User = require('../models/user');
 
-exports.getBooks = (req, res, next) => {
+exports.getBooks = async (req, res, next) => {
     const currentPage = req.query.page || 1;
     const perPage = 2;
-    let totalItems;
-    Book.find().countDocuments()
-        .then(count => {
-            totalItems = count;
-            return Book.find()
-                .skip((currentPage - 1) * perPage)
-                .limit(perPage);
-        })
-        .then(books => {
-            res.status(200).json({ message: 'Books fetched', books: books, totalItems: totalItems })
-        })
-        .catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
-            }
-            next(err);
-        });    
+    try{
+        const totalItems = await Book.find().countDocuments()
+        const books = await Book.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+        res.status(200).json({ message: 'Books fetched', books: books, totalItems: totalItems })        
+    } catch (err){
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    }   
 };
 
 exports.getBook = (req, res, next) => {
