@@ -20,7 +20,9 @@ describe('Auth Controller - Login', function(){
             expect(result).to.be.an('error')
             expect(result).to.have.property('statusCode', 500)
             done();
-        })
+        }).catch(err => {
+            done(err);
+        });
 
         User.findOne.restore();
     })
