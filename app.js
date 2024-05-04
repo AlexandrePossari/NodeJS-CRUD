@@ -6,8 +6,8 @@ const appPort = process.env.APP_PORT;
 const helmet = require('helmet')
 const morgan = require('morgan')
 
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
+const feedRoutes = require('./src/routes/feed');
+const authRoutes = require('./src/routes/auth');
 
 const app = express();
 
