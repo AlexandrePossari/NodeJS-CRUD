@@ -8,7 +8,7 @@ Future improvements and current pendencies listed in [issues](https://github.com
 
 ### Techs used
 - Node.js 21.6.1;
-- Express.js 4.18.3;
+- Express.js 4.19.2;
 - Mongoose 8.2.3;
 - Mocha 10.4.0;
 - Chai 4.4.1;
