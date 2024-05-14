@@ -5,6 +5,8 @@ const mongoUri = process.env.MONGO_URI;
 const appPort = process.env.APP_PORT;
 const helmet = require('helmet')
 const morgan = require('morgan')
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocs = require('./swagger.json')
 
 const feedRoutes = require('./src/routes/feed');
 const authRoutes = require('./src/routes/auth');
@@ -23,6 +25,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
 

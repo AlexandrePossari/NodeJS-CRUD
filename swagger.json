@@ -1,0 +1,103 @@
+{
+    "openapi": "3.0.0",
+    "info":{
+        "title": "NodeJS Rest API",
+        "description": "Learning Node",
+        "contact": {
+            "email": "ac.possari@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths":{
+        "/feed/book":{
+            "post": {
+                "summary": "Book registration",
+                "description": "Route responsible for registering the books",
+                "tags": ["Books"],
+                "security": [{"bearerAuth": []}],
+                "requestBody": {
+                    "content":{
+                        "application/json":{
+                            "schema":{
+                                "$ref": "#/components/schemas/Book"
+                            },
+                            "examples": {
+                                "book": {
+                                    "value":{
+                                        "name": "The Little Prince",
+                                        "author": "Antoine de Saint-Exupéry"
+                                    }
+                                }
+                            }
+                        }
+                        
+                    }
+                },
+                "responses": {
+                    "422":{
+                        "description": "Validation failed, data entered is incorrect"
+                    },
+                    "201":{
+                        "description": "Book created!",
+                        "content": {                        
+                            "application/json":{
+                                "$ref": "#/components/schemas/Book"
+                            }   
+                        }                         
+                    },
+                    "500":{
+                        "description": "Internal server error"
+                    }
+                }                
+            }
+        }
+    },
+    "components": {
+        "schemas":{
+            "Book":{
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "author": {
+                        "type": "string"
+                    },
+                    "creator":{
+                        "$ref": "#/components/schemas/User"
+                    }
+                }
+            },
+            "User": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "books": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Book"
+                        }
+                    }
+                }
+            }
+        },
+        "securitySchemes":{
+            "bearerAuth":{
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}
