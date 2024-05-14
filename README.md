@@ -28,42 +28,9 @@ docker-compose up --build
 ```
 
 ## API Documentation
-### Entities
-* User:
-```
-{
-  "email": "ac.possari@gmail.com",
-  "password": "XXXX",
-  "name": "Alexandre Possari",
-  "status": "active",
-  "books": ["bookId1", "bookId2"]
-}
-```
+After running the project, visit http://localhost:8080/docs in your browser to access the API documentation
 
-| Field | Value | Description |
-|--|--|--|
-| email | String, not null, real email | |
-| password | String with 5 characters minimum, not null | |
-| name | String, not null | |
-| status | String `New User`/`Active`/`Inactive` | |
-| books | String array | Should contains ids from books created by the user |
-
-* Book:
-```
-{
-    "name": "The Little Prince",
-    "author": "Antoine de Saint-Exupéry",
-    "creator": "userId1"
-}
-```
-
-| Field | Value | Description |
-|--|--|--|
-| name | String with 5 characters minimum, not null | |
-| author | String with 5 characters minimum, not null | |
-| creator | String, not null | Id of the user who created the book in the API|
-
-Note: You can also run the collection `NodeJS RestAPI.postman_collection` located in folder `postman`. Just import it into Postman and run.
+You can also run the collection `NodeJS RestAPI.postman_collection` located in folder `postman`. Just import it into Postman and run.
 
 ## Project Folder Structure
 ```
