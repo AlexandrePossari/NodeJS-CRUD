@@ -51,6 +51,51 @@
                 }                
             }
         },
+        "/feed/books?page={pageNumber}": {
+            "get": {
+                "summary": "Get all books with pagination",
+                "description": "Route to get all books with pagination",
+                "tags": ["Books"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                      "name": "page",
+                      "in": "path",
+                      "description": "Number of the page to return (2 books at a time)",
+                      "required": true
+                    }
+                  ],
+                "responses": {
+                    "200":{
+                        "description": "Books fetched",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "books": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Book"
+                                            }
+                                        },
+                                        "totalItems": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }                        
+                    },
+                    "500":{
+                        "description": "Internal server error"
+                    }
+                }                
+            }
+        },
         "/feed/book/{bookId}": {
             "get": {
                 "summary": "Get book by id",
