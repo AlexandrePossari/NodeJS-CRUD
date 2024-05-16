@@ -203,6 +203,56 @@
                     }
                 }                
             }
+        },
+        "/auth/login":{
+            "post": {
+                "summary": "Login with a user",
+                "description": "Login with a user and get jwt token",
+                "tags": ["User"],               
+                "requestBody": {
+                "content":{
+                    "application/json":{
+                        "schema":{
+                            "$ref": "#/components/schemas/User"
+                        },
+                        "examples": {
+                            "user": {
+                                "value":{
+                                    "email": "ac.possari@ges.inatel.br",
+                                    "password": "testpassword123"
+                                }
+                            }
+                        }
+                    }
+                }
+                },  
+                "responses": {
+                    "401":{
+                        "description": "A user with this email could not be found/Wrong password" 
+                    },
+                    "200":{
+                        "description": "User logged in",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "userId": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            }
+                        }                      
+                    },
+                    "500":{
+                        "description": "Internal server error"
+                    }
+                }                
+            }
         }
     },
     "components": {
