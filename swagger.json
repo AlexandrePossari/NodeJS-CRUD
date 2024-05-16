@@ -161,6 +161,48 @@
                     }
                 }                
             }
+        },
+        "/auth/signup":{
+            "put": {
+                "summary": "Register a user",
+                "description": "Create a user",
+                "tags": ["User"],               
+                "requestBody": {
+                "content":{
+                    "application/json":{
+                        "schema":{
+                            "$ref": "#/components/schemas/User"
+                        },
+                        "examples": {
+                            "user": {
+                                "value":{
+                                    "email": "ac.possari@ges.inatel.br",
+                                    "name": "Alexandre Possari",
+                                    "password": "testpassword123"
+                                }
+                            }
+                        }
+                    }
+                }
+                },  
+                "responses": {
+                    "422":{
+                        "description": "Validation failed" 
+                    },
+                    "201":{
+                        "description": "User created",
+                        "schema": {
+                            "type": "object",
+                            "userId": {
+                              "type": "integer"
+                            }
+                        }                        
+                    },
+                    "500":{
+                        "description": "Internal server error"
+                    }
+                }                
+            }
         }
     },
     "components": {
@@ -168,6 +210,9 @@
             "Book":{
                 "type": "object",
                 "properties": {
+                    "id":{
+                        "type": "integer"
+                    },
                     "name": {
                         "type": "string"
                     },
@@ -182,6 +227,9 @@
             "User": {
                 "type": "object",
                 "properties": {
+                    "id":{
+                        "type": "integer"
+                    },
                     "email": {
                         "type": "string"
                     },
