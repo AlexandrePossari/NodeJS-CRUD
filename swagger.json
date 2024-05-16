@@ -132,6 +132,34 @@
                         "description": "Internal server error"
                     }
                 }                
+            },
+            "delete": {
+                "summary": "Delete book by id",
+                "description": "Route to delete a single book by id",
+                "tags": ["Books"],
+                "security": [{"bearerAuth": []}],
+                "parameters": [
+                    {
+                      "name": "bookId",
+                      "in": "path",
+                      "description": "ID of book to delete",
+                      "required": true
+                    }
+                  ],
+                "responses": {
+                    "404":{
+                        "description": "Could not find book"
+                    },
+                    "403":{
+                        "description": "Not authorized, because you are not the user who created it"
+                    },
+                    "200":{
+                        "description": "Deleted book"                       
+                    },
+                    "500":{
+                        "description": "Internal server error"
+                    }
+                }                
             }
         }
     },
