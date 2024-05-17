@@ -39,43 +39,39 @@ exports.getBook = async (req, res, next) => {
         
 };
 
-exports.createBook = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        const error = new Error('Validation failed, data entered is incorrect');
-        error.statusCode = 422;
-        throw error;
-    }
-    let creator;
-    const name = req.body.name;
-    const author = req.body.author; 
+exports.createBook = async (req, res, next) => {
+    try{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const error = new Error('Validation failed, data entered is incorrect');
+            error.statusCode = 422;
+            throw error;
+        }
+        let creator;
+        const name = req.body.name;
+        const author = req.body.author; 
 
-    const book = new Book({
-        name: name,
-        author: author,
-        creator: req.userId
-    });
-    book.save()
-    .then(result => {
-        return User.findById(req.userId);
-    })
-    .then(user =>{  
+        const book = new Book({
+            name: name,
+            author: author,
+            creator: req.userId
+        });
+        const result = await book.save();
+        const user = await User.findById(req.userId);
         creator = user;
         user.books.push(book);
-        return user.save(); 
-    })
-    .then(result =>{     
+        const resultUserSave = await user.save(); 
         res.status(201).json({
             message: 'Book created!',
             book: book,
             creator: {_id: creator._id, name: creator.name}
-        })        
-    }).catch(err => {
+        }) 
+    } catch (err){
         if (!err.statusCode) {
             err.statusCode = 500;
         }
         next(err);
-    });
+    }        
 };
 
 
