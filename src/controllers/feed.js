@@ -103,9 +103,10 @@ exports.updateBook = async (req, res, next) => {
     }
 };
 
-exports.deleteBook = (req, res, next) => {
-    const bookId = req.params.bookId;
-    Book.findById(bookId).then(book => {
+exports.deleteBook = async (req, res, next) => {
+    try {
+        const bookId = req.params.bookId;
+        const book = await Book.findById(bookId);
         if (!book) {
             const error = new Error('Could not find book');
             error.statusCode = 404;
@@ -116,20 +117,17 @@ exports.deleteBook = (req, res, next) => {
             error.statusCode = 403;
             throw error;
         }
-        return Book.findByIdAndDelete(bookId);
-    }).then(result => {
-        return User.findById(req.userId);
-    }).then(user => {
+        const result = await Book.findByIdAndDelete(bookId);
+        const user = await User.findById(req.userId);
         user.books.pull(bookId);
-        return user.save();
-    }).then(result => {
+        const resultUserSave = await user.save();
         res.status(200).json({ message: 'Deleted book' })
-    }).catch(err => {
+    } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
         }
         next(err);
-    });
+    }
 }
 
 
