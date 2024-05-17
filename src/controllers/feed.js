@@ -20,23 +20,23 @@ exports.getBooks = async (req, res, next) => {
     }   
 };
 
-exports.getBook = (req, res, next) => {
-    const bookId = req.params.bookId;
-    Book.findById(bookId)
-        .then(book => {
-            if (!book) {
-                const error = new Error("Could not find book");
-                error.statusCode = 404;
-                throw error;
-            }
-            res.status(200).json({ message: 'Book fetched', book: book })
-        })
-        .catch(err => {
-            if (!err.statusCode) {
-                err.statusCode = 500;
-            }
-            next(err);
-        });
+exports.getBook = async (req, res, next) => {
+    try{
+        const bookId = req.params.bookId;
+        const book = await Book.findById(bookId)
+        if (!book) {
+            const error = new Error("Could not find book");
+            error.statusCode = 404;
+            throw error;
+        }
+        res.status(200).json({ message: 'Book fetched', book: book })
+    } catch (err){
+        if (!err.statusCode) {
+            err.statusCode = 500;
+        }
+        next(err);
+    } 
+        
 };
 
 exports.createBook = (req, res, next) => {
