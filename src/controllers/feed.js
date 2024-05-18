@@ -77,6 +77,12 @@ exports.createBook = async (req, res, next) => {
 
 exports.updateBook = async (req, res, next) => {
     try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            const error = new Error('Validation failed, data entered is incorrect');
+            error.statusCode = 422;
+            throw error;
+        }
         const bookId = req.params.bookId;
         const name = req.body.name;
         const author = req.body.author;
