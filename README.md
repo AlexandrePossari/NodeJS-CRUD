@@ -40,8 +40,9 @@ You can also run the collection `NodeJS RestAPI.postman_collection` located in f
     ├── controllers                       
     ├── middleware                        
     ├── models                            
-    ├── routes                            
-    └── test                             
+    ├── routes  
+    ├── test                            
+    └── validations                             
 ```
 
 The `postman` folder holds the Postman collection.
@@ -57,3 +58,5 @@ The `models` folder contains data models that define the structure of the data(s
 The `routes` folder contains the route handlers for the endpoints.
 
 The `test` folder should contain tests for the application.
+
+The `validation` folder should contain validation logic for users inputs
