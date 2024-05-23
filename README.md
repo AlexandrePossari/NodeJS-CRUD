@@ -12,6 +12,7 @@ Future improvements and current pendencies listed in [issues](https://github.com
 - Mongoose 8.2.3;
 - Mocha 10.4.0;
 - Chai 4.4.1;
+- Sinon 17.0.1;
 
 ## Requirements
 
