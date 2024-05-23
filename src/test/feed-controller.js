@@ -4,6 +4,62 @@ const Book = require('../models/book');
 const User = require('../models/user');
 const updateBook = require('../controllers/feed').updateBook;
 const deleteBook = require('../controllers/feed').deleteBook;
+const getBook = require('../controllers/feed').getBook;
+
+describe('Feed Controller - Get book', () => {
+    let req, res, next;
+
+    beforeEach(() => {
+        req = {
+            params: { bookId: 'someBookId' },
+            body: { name: "someName", author: "someAuthor" },
+            userId: 'someUserId'
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub()
+        };
+        next = sinon.stub();
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should throw an error 404 if the book is not found', async () => {
+        sinon.stub(Book, 'findById').returns(null);
+
+        await getBook(req, res, next);
+
+        expect(next.calledOnce).to.be.true;
+        const error = next.firstCall.args[0];
+        expect(error).to.be.an('error');
+        expect(error.message).to.equal('Could not find book');
+        expect(error.statusCode).to.equal(404);
+    });    
+
+    it('should throw 500 for unexpected errors', async () => {
+        sinon.stub(Book, 'findById').throws();
+
+        await getBook(req, res, next);
+
+        expect(next.calledOnce).to.be.true;
+        const error = next.firstCall.args[0];
+        expect(error).to.be.an('error');
+        expect(error.statusCode).to.equal(500);
+    });
+
+    it('should get the book', async () => {
+        const book = { creator: req.userId, name: req.body.name, author: req.body.author };
+        sinon.stub(Book, 'findById').returns(book);
+
+        await getBook(req, res, next);
+
+        expect(Book.findById.calledOnce).to.be.true;
+        expect(res.status.calledOnceWith(200)).to.be.true;
+        expect(res.json.calledOnceWith({ message: 'Book fetched', book: book })).to.be.true;
+    });
+});
 
 describe('Feed Controller - Update book', () => {
     let req, res, next;
