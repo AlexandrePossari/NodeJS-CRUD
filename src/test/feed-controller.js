@@ -5,6 +5,67 @@ const User = require('../models/user');
 const updateBook = require('../controllers/feed').updateBook;
 const deleteBook = require('../controllers/feed').deleteBook;
 const getBook = require('../controllers/feed').getBook;
+const createBook = require('../controllers/feed').createBook;
+
+describe('Feed Controller - Create book', () => {
+    let req, res, next;
+
+    beforeEach(() => {
+        req = {
+            body: { name: "someName", author: "someAuthor" },
+            userId: "someUserId"
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub()
+        };
+        next = sinon.stub();
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });  
+
+    it('should create the book', async () => {
+        const saveBookStub = sinon.stub(Book.prototype, 'save').resolves({
+            _id: 'someBookId',
+            name: 'someName',
+            author: 'someAuthor',
+            creator: req.userId
+        });
+
+        const userStub = sinon.stub(User, 'findById').resolves({
+            _id: req.userId,
+            name: 'someUser',
+            books: [],
+            save: sinon.stub().resolvesThis()
+        });
+
+        await createBook(req, res, next);
+
+        expect(saveBookStub.calledOnce).to.be.true;
+        expect(userStub.calledOnceWith(req.userId)).to.be.true;
+        expect(res.status.calledOnceWith(201)).to.be.true;
+        expect(res.json.calledOnce).to.be.true;
+
+        const response = res.json.firstCall.args[0];
+        expect(response).to.have.property('message', 'Book created!');
+        expect(response.book).to.include({ name: 'someName', author: 'someAuthor' });
+        expect(response.creator).to.include({ _id: req.userId, name: 'someUser' });
+    });
+
+    it('should throw 500 for unexpected errors', async () => {
+        const book = { creator: req.userId, name: req.body.name, author: req.body.author, save: sinon.stub().throws() };
+
+        await createBook(req, res, next);
+
+        expect(next.calledOnce).to.be.true;
+        const error = next.firstCall.args[0];
+        expect(error).to.be.an('error');
+        expect(error.statusCode).to.equal(500);
+    });
+
+});
 
 describe('Feed Controller - Get book', () => {
     let req, res, next;
