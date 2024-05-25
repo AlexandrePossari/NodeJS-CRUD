@@ -2,9 +2,11 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const Book = require('../models/book');
 const User = require('../models/user');
+const { query } = require('express');
 const updateBook = require('../controllers/feed').updateBook;
 const deleteBook = require('../controllers/feed').deleteBook;
 const getBook = require('../controllers/feed').getBook;
+const getBooks = require('../controllers/feed').getBooks;
 const createBook = require('../controllers/feed').createBook;
 
 describe('Feed Controller - Create book', () => {
@@ -65,6 +67,59 @@ describe('Feed Controller - Create book', () => {
         expect(error.statusCode).to.equal(500);
     });
 
+});
+
+describe('Feed Controller - Get books', () => {
+    let req, res, next;
+
+    beforeEach(() => {
+        req = {
+            query: { page: 2 }
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub()
+        };
+        next = sinon.stub();
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should throw 500 for unexpected errors', async () => {
+        sinon.stub(Book, 'find').throws();
+
+        await getBooks(req, res, next);
+
+        expect(next.calledOnce).to.be.true;
+        const error = next.firstCall.args[0];
+        expect(error).to.be.an('error');
+        expect(error.statusCode).to.equal(500);
+    });
+
+    it('should get the books with pagination', async () => {
+        const totalItems = 10;
+        const booksExpected = [
+            { _id: 'someId3', name: 'someBook3', author: 'someAuthor3' },
+            { _id: 'someId4', name: 'someBook4', author: 'someAuthor4' }
+        ];
+        sinon.stub(Book, 'find').returns({
+            countDocuments: sinon.stub().resolves(totalItems),
+            skip: sinon.stub().returnsThis(),
+            limit: sinon.stub().resolves(booksExpected)
+        });
+
+        await getBooks(req, res, next);
+
+        
+
+        expect(Book.find().countDocuments.calledOnce).to.be.true;
+        expect(Book.find().skip.calledOnceWith(2)).to.be.true;
+        expect(Book.find().limit.calledOnceWith(2)).to.be.true;
+        expect(res.status.calledOnceWith(200)).to.be.true;
+        expect(res.json.calledOnceWith({ message: 'Books fetched', books: booksExpected, totalItems: totalItems })).to.be.true;
+    });
 });
 
 describe('Feed Controller - Get book', () => {
